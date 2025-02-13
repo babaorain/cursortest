@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<!-- 巴氏量表計算機 -->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barthel Index Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #ffffff; /* 背景色為白色 */
+            color: #000000; /* 文字顏色為黑色 */
+        }
+        h1 {
+            text-align: center;
+            color: #333333; /* 標題顏色為深灰色 */
+        }
+        .question {
+            margin-bottom: 20px;
+            background-color: #f9f9f9; /* 柔和的淺灰色背景 */
+            padding: 15px;
+            border: 1px solid #dddddd; /* 淺灰色邊框 */
+            border-radius: 5px;
+            box-shadow: 2px 2px 12px rgb(0 0 0 / 10%);
+        }
+        .question label {
+            font-weight: bold;
+            color: #333333; /* 標題顏色為深灰色 */
+        }
+        .options {
+            margin-top: 10px;
+        }
+        .options input {
+            margin-right: 10px;
+        }
+        .result {
+            font-size: 24px; /* 字體增大 */
+            font-weight: bold;
+            margin-top: 30px;
+            text-align: center;
+            color: #000000; /* 文字顏色為黑色 */
+        }
+        .result div {
+            margin-bottom: 5px;
+        }
+        .result div span {
+            display: inline-block;
+            width: 150px; /* 固定寬度以對齊 */
+        }
+        .btn {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 40px; /* 调整按钮大小 */
+            font-size: 20px;     /* 调整按钮字体大小 */
+            background-color: #00796b;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #004d40;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #777;
+        }
+        /* 響應式設計 */
+        @media (max-width: 600px) {
+            body {
+                margin: 10px;
+            }
+            .result div span {
+                display: block;
+                width: auto;
+                text-align: left;
+            }
+            .result {
+                font-size: 20px; /* 手機端字體稍小 */
+            }
+            .question {
+                padding: 10px;
+            }
+            .btn {
+                padding: 10px 20px; /* 調小手機端的按鈕 */
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+<h1>Modified Ashworth Scale Calculator</h1>
+
+    <form id="masForm">
+        <!-- 肘關節屈曲 -->
+        <div class="question">
+            <label>1. 肘關節屈曲 Elbow Flexors</label>
+            <div class="options">
+                <input type="radio" name="elbowFlexors" value="0" required checked> 0 - 肌張力無增加<br>
+                <input type="radio" name="elbowFlexors" value="1"> 1 - 輕微增加，關節末端出現最小阻力<br>
+                <input type="radio" name="elbowFlexors" value="1.5"> 1+ - 輕微增加，關節活動範圍前半段有最小阻力<br>
+                <input type="radio" name="elbowFlexors" value="2"> 2 - 大部分關節活動範圍有較明顯阻力<br>
+                <input type="radio" name="elbowFlexors" value="3"> 3 - 關節活動範圍有強烈阻力，被動活動困難<br>
+                <input type="radio" name="elbowFlexors" value="4"> 4 - 關節僵硬，無法進行被動活動<br>
+            </div>
+        </div>
+
+        <!-- 肘關節伸展 -->
+        <div class="question">
+            <label>2. 肘關節伸展 Elbow Extensors</label>
+            <div class="options">
+                <input type="radio" name="elbowExtensors" value="0" required checked> 0 - 肌張力無增加<br>
+                <input type="radio" name="elbowExtensors" value="1"> 1 - 輕微增加，關節末端出現最小阻力<br>
+                <input type="radio" name="elbowExtensors" value="1.5"> 1+ - 輕微增加，關節活動範圍前半段有最小阻力<br>
+                <input type="radio" name="elbowExtensors" value="2"> 2 - 大部分關節活動範圍有較明顯阻力<br>
+                <input type="radio" name="elbowExtensors" value="3"> 3 - 關節活動範圍有強烈阻力，被動活動困難<br>
+                <input type="radio" name="elbowExtensors" value="4"> 4 - 關節僵硬，無法進行被動活動<br>
+            </div>
+        </div>
+
+        <!-- 腕關節屈曲 -->
+        <div class="question">
+            <label>3. 腕關節屈曲 Wrist Flexors</label>
+            <div class="options">
+                <input type="radio" name="wristFlexors" value="0" required checked> 0 - 肌張力無增加<br>
+                <input type="radio" name="wristFlexors" value="1"> 1 - 輕微增加，關節末端出現最小阻力<br>
+                <input type="radio" name="wristFlexors" value="1.5"> 1+ - 輕微增加，關節活動範圍前半段有最小阻力<br>
+                <input type="radio" name="wristFlexors" value="2"> 2 - 大部分關節活動範圍有較明顯阻力<br>
+                <input type="radio" name="wristFlexors" value="3"> 3 - 關節活動範圍有強烈阻力，被動活動困難<br>
+                <input type="radio" name="wristFlexors" value="4"> 4 - 關節僵硬，無法進行被動活動<br>
+            </div>
+        </div>
+
+        <!-- 膝關節屈曲 -->
+        <div class="question">
+            <label>4. 膝關節屈曲 Knee Flexors</label>
+            <div class="options">
+                <input type="radio" name="kneeFlexors" value="0" required checked> 0 - 肌張力無增加<br>
+                <input type="radio" name="kneeFlexors" value="1"> 1 - 輕微增加，關節末端出現最小阻力<br>
+                <input type="radio" name="kneeFlexors" value="1.5"> 1+ - 輕微增加，關節活動範圍前半段有最小阻力<br>
+                <input type="radio" name="kneeFlexors" value="2"> 2 - 大部分關節活動範圍有較明顯阻力<br>
+                <input type="radio" name="kneeFlexors" value="3"> 3 - 關節活動範圍有強烈阻力，被動活動困難<br>
+                <input type="radio" name="kneeFlexors" value="4"> 4 - 關節僵硬，無法進行被動活動<br>
+            </div>
+        </div>
+
+        <!-- 踝關節蹠屈 -->
+        <div class="question">
+            <label>5. 踝關節蹠屈 Ankle Plantar Flexors</label>
+            <div class="options">
+                <input type="radio" name="ankleFlexors" value="0" required checked> 0 - 肌張力無增加<br>
+                <input type="radio" name="ankleFlexors" value="1"> 1 - 輕微增加，關節末端出現最小阻力<br>
+                <input type="radio" name="ankleFlexors" value="1.5"> 1+ - 輕微增加，關節活動範圍前半段有最小阻力<br>
+                <input type="radio" name="ankleFlexors" value="2"> 2 - 大部分關節活動範圍有較明顯阻力<br>
+                <input type="radio" name="ankleFlexors" value="3"> 3 - 關節活動範圍有強烈阻力，被動活動困難<br>
+                <input type="radio" name="ankleFlexors" value="4"> 4 - 關節僵硬，無法進行被動活動<br>
+            </div>
+        </div>
+
+        <button type="button" class="btn" onclick="calculateMAS()">計算</button>
+    </form>
+
+<!-- 結果顯示 -->
+<div class="result" id="result"></div>
+
+</div>
+
+<div class="footer">
+    &copy; BigbigDada
+</div>
+
+    <script>
+    function calculateMAS() {
+        var form = document.getElementById('masForm');
+        var elements = form.elements;
+
+        // 獲取每個關節的分數
+        var elbowFlexors = parseFloat(elements['elbowFlexors'].value);
+        var elbowExtensors = parseFloat(elements['elbowExtensors'].value);
+        var wristFlexors = parseFloat(elements['wristFlexors'].value);
+        var kneeFlexors = parseFloat(elements['kneeFlexors'].value);
+        var ankleFlexors = parseFloat(elements['ankleFlexors'].value);
+
+        // 構建結果文本
+        var resultText = `
+            <div>MAS Score 評估結果：</div>
+            <div style="font-size: 18px; margin-top: 15px;">
+                <div>肘關節屈曲: ${elbowFlexors}</div>
+                <div>肘關節伸展: ${elbowExtensors}</div>
+                <div>腕關節屈曲: ${wristFlexors}</div>
+                <div>膝關節屈曲: ${kneeFlexors}</div>
+                <div>踝關節蹠屈: ${ankleFlexors}</div>
+            </div>
+        `;
+
+        // 顯示結果
+        var resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = resultText;
+    }
+    </script>
+
+</body>
+</html>             
