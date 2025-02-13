@@ -17,42 +17,39 @@
             color: #333333; /* 標題顏色為深灰色 */
         }
         .question {
-            margin-bottom: 20px;
-            background-color: #f9f9f9; /* 柔和的淺灰色背景 */
-            padding: 15px;
-            border: 1px solid #dddddd; /* 淺灰色邊框 */
+            margin-bottom: 30px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #dddddd;
             border-radius: 5px;
             box-shadow: 2px 2px 12px rgb(0 0 0 / 10%);
         }
-        .question label {
+        .question > label {
             font-weight: bold;
-            color: #333333; /* 標題顏色為深灰色 */
+            color: #333333;
+            display: block;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .side-label {
+            font-weight: bold;
+            margin: 10px 0;
+            color: #00796b;
         }
         .options {
             margin-top: 10px;
         }
-        .options input {
-            margin-right: 10px;
-        }
         .result {
-            font-size: 24px; /* 字體增大 */
-            font-weight: bold;
+            font-size: 16px; /* 字體稍微縮小 */
+            font-weight: normal;
             margin-top: 30px;
             text-align: center;
-            color: #000000; /* 文字顏色為黑色 */
-        }
-        .result div {
-            margin-bottom: 5px;
-        }
-        .result div span {
-            display: inline-block;
-            width: 150px; /* 固定寬度以對齊 */
         }
         .btn {
             display: block;
             margin: 20px auto;
-            padding: 15px 40px; /* 调整按钮大小 */
-            font-size: 20px;     /* 调整按钮字体大小 */
+            padding: 15px 40px;
+            font-size: 20px;
             background-color: #00796b;
             color: #fff;
             border: none;
@@ -63,7 +60,7 @@
             background-color: #004d40;
         }
         .container {
-            max-width: 600px;
+            max-width: 1000px;
             margin: 0 auto;
         }
         .footer {
@@ -71,28 +68,6 @@
             margin-top: 50px;
             color: #777;
         }
-        /* 響應式設計 */
-        @media (max-width: 600px) {
-            body {
-                margin: 10px;
-            }
-            .result div span {
-                display: block;
-                width: auto;
-                text-align: left;
-            }
-            .result {
-                font-size: 20px; /* 手機端字體稍小 */
-            }
-            .question {
-                padding: 10px;
-            }
-            .btn {
-                padding: 10px 20px; /* 調小手機端的按鈕 */
-                font-size: 18px;
-            }
-        }
-        
         select {
             width: 100%;
             padding: 8px;
@@ -100,276 +75,241 @@
             border-radius: 4px;
             background-color: white;
             font-size: 16px;
+            margin-bottom: 15px;
         }
-
         select:focus {
             outline: none;
             border-color: #00796b;
         }
-        
+        .side-container {
+            display: flex;
+            gap: 20px;
+        }
+        .side {
+            flex: 1;
+        }
+        @media (max-width: 768px) {
+            .side-container {
+                flex-direction: column;
+            }
+            body {
+                margin: 10px;
+            }
+            .question {
+                padding: 15px;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Modified Ashworth Scale Calculator</h1>
         <form id="masForm">
-            <!-- 肘關節屈曲 -->
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h2 style="flex: 1; text-align: center;">Left Side</h2>
+                <h2 style="flex: 1; text-align: center;">Right Side</h2>
+            </div>
+
+            <!-- Elbow Joint -->
             <div class="question">
-                <label>1. 肘關節屈曲 Elbow Flexors</label>
-                <div class="options">
-                    <select name="leftElbowFlexors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
+                <label>Elbow Joint</label>
+                <div class="side-container">
+                    <div class="side">
+                        <div class="side-label">Left Side</div>
+                        <select name="leftElbowFlexors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                        <select name="leftElbowExtensors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                    </div>
+                    <div class="side">
+                        <div class="side-label">Right Side</div>
+                        <select name="rightElbowFlexors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                        <select name="rightElbowExtensors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-    
-            <!-- 肘關節伸展 -->
+
+            <!-- Wrist Joint -->
             <div class="question">
-                <label>2. 肘關節伸展 Elbow Extensors</label>
-                <div class="options">
-                    <select name="leftElbowExtensors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
+                <label>Wrist Joint</label>
+                <div class="side-container">
+                    <div class="side">
+                        <div class="side-label">Left Side</div>
+                        <select name="leftWristFlexors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                        <select name="leftWristExtensors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                    </div>
+                    <div class="side">
+                        <div class="side-label">Right Side</div>
+                        <select name="rightWristFlexors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                        <select name="rightWristExtensors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-    
-            <!-- 腕關節屈曲 -->
+
+            <!-- Knee Joint -->
             <div class="question">
-                <label>3. 腕關節屈曲 Wrist Flexors</label>
-                <div class="options">
-                    <select name="leftWristFlexors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
+                <label>Knee Joint</label>
+                <div class="side-container">
+                    <div class="side">
+                        <div class="side-label">Left Side</div>
+                        <select name="leftKneeFlexors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                        <select name="leftKneeExtensors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                    </div>
+                    <div class="side">
+                        <div class="side-label">Right Side</div>
+                        <select name="rightKneeFlexors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                        <select name="rightKneeExtensors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-    
-            <!-- 腕關節伸展 (新增) -->
+
+            <!-- Ankle Joint -->
             <div class="question">
-                <label>4. 腕關節伸展 Wrist Extensors</label>
-                <div class="options">
-                    <select name="leftWristExtensors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
+                <label>Ankle Joint</label>
+                <div class="side-container">
+                    <div class="side">
+                        <div class="side-label">Left Side</div>
+                        <select name="leftAnkleFlexors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                        <select name="leftAnkleDorsiflexors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                    </div>
+                    <div class="side">
+                        <div class="side-label">Right Side</div>
+                        <select name="rightAnkleFlexors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                        <select name="rightAnkleDorsiflexors" required>
+                            <option value="0">0 - No increase in muscle tone</option>
+                            <option value="1">1 - Slight increase; minimal resistance at end range</option>
+                            <option value="1.5">1+ - Slight increase; minimal resistance in the first half of range</option>
+                            <option value="2">2 - More marked increase over most of the range</option>
+                            <option value="3">3 - Considerable increase; passive movement difficult</option>
+                            <option value="4">4 - Affected part rigid in flexion or extension</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-    
-            <!-- 膝關節屈曲 -->
-            <div class="question">
-                <label>5. 膝關節屈曲 Knee Flexors</label>
-                <div class="options">
-                    <select name="leftKneeFlexors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
-                </div>
-            </div>
-    
-            <!-- 膝關節伸展 (新增) -->
-            <div class="question">
-                <label>6. 膝關節伸展 Knee Extensors</label>
-                <div class="options">
-                    <select name="leftKneeExtensors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
-                </div>
-            </div>
-    
-            <!-- 踝關節蹠屈 -->
-            <div class="question">
-                <label>7. 踝關節蹠屈 Ankle Plantar Flexors</label>
-                <div class="options">
-                    <select name="leftAnkleFlexors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
-                </div>
-            </div>
-    
-            <!-- 踝關節背屈 (新增) -->
-            <div class="question">
-                <label>8. 踝關節背屈 Ankle Dorsiflexors</label>
-                <div class="options">
-                    <select name="leftAnkleDorsiflexors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
-                </div>
-            </div>
-    
-            <!-- 肘關節屈曲 -->
-            <div class="question">
-                <label>9. 肘關節屈曲 Elbow Flexors</label>
-                <div class="options">
-                    <select name="rightElbowFlexors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
-                </div>
-            </div>
-    
-            <!-- 肘關節伸展 -->
-            <div class="question">
-                <label>10. 肘關節伸展 Elbow Extensors</label>
-                <div class="options">
-                    <select name="rightElbowExtensors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
-                </div>
-            </div>
-    
-            <!-- 腕關節屈曲 -->
-            <div class="question">
-                <label>11. 腕關節屈曲 Wrist Flexors</label>
-                <div class="options">
-                    <select name="rightWristFlexors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
-                </div>
-            </div>
-    
-            <!-- 腕關節伸展 (新增) -->
-            <div class="question">
-                <label>12. 腕關節伸展 Wrist Extensors</label>
-                <div class="options">
-                    <select name="rightWristExtensors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
-                </div>
-            </div>
-    
-            <!-- 膝關節屈曲 -->
-            <div class="question">
-                <label>13. 膝關節屈曲 Knee Flexors</label>
-                <div class="options">
-                    <select name="rightKneeFlexors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
-                </div>
-            </div>
-    
-            <!-- 膝關節伸展 (新增) -->
-            <div class="question">
-                <label>14. 膝關節伸展 Knee Extensors</label>
-                <div class="options">
-                    <select name="rightKneeExtensors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
-                </div>
-            </div>
-    
-            <!-- 踝關節蹠屈 -->
-            <div class="question">
-                <label>15. 踝關節蹠屈 Ankle Plantar Flexors</label>
-                <div class="options">
-                    <select name="rightAnkleFlexors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
-                </div>
-            </div>
-    
-            <!-- 踝關節背屈 (新增) -->
-            <div class="question">
-                <label>16. 踝關節背屈 Ankle Dorsiflexors</label>
-                <div class="options">
-                    <select name="rightAnkleDorsiflexors" required>
-                        <option value="0">0 - 肌張力無增加</option>
-                        <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
-                        <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
-                        <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
-                        <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
-                        <option value="4">4 - 關節僵硬，無法進行被動活動</option>
-                    </select>
-                </div>
-            </div>
-    
-            <button type="button" class="btn" onclick="calculateMAS()">計算</button>
+
+            <button type="button" class="btn" onclick="calculateMAS()">Calculate</button>
         </form>
         
-        <!-- 添加結果顯示區域 -->
         <div id="result" class="result"></div>
     </div>
 
     <div class="footer">
-        <!-- 如果需要可以添加頁腳內容 -->
+        <!-- Footer content if needed -->
     </div>
 
     <script>
     function calculateMAS() {
         var form = document.getElementById('masForm');
         var elements = form.elements;
-    
-        // 獲取左側所有關節分數
+        
+        // Get left side scores
         var leftScores = {
             elbow: {
                 flexors: parseFloat(elements['leftElbowFlexors'].value),
@@ -389,7 +329,7 @@
             }
         };
 
-        // 獲取右側所有關節分數
+        // Get right side scores
         var rightScores = {
             elbow: {
                 flexors: parseFloat(elements['rightElbowFlexors'].value),
@@ -409,56 +349,35 @@
             }
         };
 
-        // 計算左右側總分
-        var leftTotal = (
-            leftScores.elbow.flexors + leftScores.elbow.extensors +
-            leftScores.wrist.flexors + leftScores.wrist.extensors +
-            leftScores.knee.flexors + leftScores.knee.extensors +
-            leftScores.ankle.flexors + leftScores.ankle.dorsiflexors
-        );
-
-        var rightTotal = (
-            rightScores.elbow.flexors + rightScores.elbow.extensors +
-            rightScores.wrist.flexors + rightScores.wrist.extensors +
-            rightScores.knee.flexors + rightScores.knee.extensors +
-            rightScores.ankle.flexors + rightScores.ankle.dorsiflexors
-        );
-
-        // 構建結果文本
+        // Build result text (only English fields, without totals)
         var resultText = `
-            <div style="margin-bottom: 20px;">MAS Score 評估結果：</div>
+            <div style="margin-bottom: 20px;">MAS Score Assessment Result:</div>
             <div style="display: flex; gap: 40px; justify-content: center;">
                 <div style="text-align: left;">
-                    <h3>左側 Left Side</h3>
-                    <div>肘關節屈曲 Elbow Flexors: ${leftScores.elbow.flexors}</div>
-                    <div>肘關節伸展 Elbow Extensors: ${leftScores.elbow.extensors}</div>
-                    <div>腕關節屈曲 Wrist Flexors: ${leftScores.wrist.flexors}</div>
-                    <div>腕關節伸展 Wrist Extensors: ${leftScores.wrist.extensors}</div>
-                    <div>膝關節屈曲 Knee Flexors: ${leftScores.knee.flexors}</div>
-                    <div>膝關節伸展 Knee Extensors: ${leftScores.knee.extensors}</div>
-                    <div>踝關節蹠屈 Ankle Plantar Flexors: ${leftScores.ankle.flexors}</div>
-                    <div>踝關節背屈 Ankle Dorsiflexors: ${leftScores.ankle.dorsiflexors}</div>
-                    <div style="margin-top: 10px; font-weight: bold;">左側總分 Left Total: ${leftTotal}</div>
+                    <h3>Left Side</h3>
+                    <div>Elbow Flexors: ${leftScores.elbow.flexors}</div>
+                    <div>Elbow Extensors: ${leftScores.elbow.extensors}</div>
+                    <div>Wrist Flexors: ${leftScores.wrist.flexors}</div>
+                    <div>Wrist Extensors: ${leftScores.wrist.extensors}</div>
+                    <div>Knee Flexors: ${leftScores.knee.flexors}</div>
+                    <div>Knee Extensors: ${leftScores.knee.extensors}</div>
+                    <div>Ankle Plantar Flexors: ${leftScores.ankle.flexors}</div>
+                    <div>Ankle Dorsiflexors: ${leftScores.ankle.dorsiflexors}</div>
                 </div>
                 <div style="text-align: left;">
-                    <h3>右側 Right Side</h3>
-                    <div>肘關節屈曲 Elbow Flexors: ${rightScores.elbow.flexors}</div>
-                    <div>肘關節伸展 Elbow Extensors: ${rightScores.elbow.extensors}</div>
-                    <div>腕關節屈曲 Wrist Flexors: ${rightScores.wrist.flexors}</div>
-                    <div>腕關節伸展 Wrist Extensors: ${rightScores.wrist.extensors}</div>
-                    <div>膝關節屈曲 Knee Flexors: ${rightScores.knee.flexors}</div>
-                    <div>膝關節伸展 Knee Extensors: ${rightScores.knee.extensors}</div>
-                    <div>踝關節蹠屈 Ankle Plantar Flexors: ${rightScores.ankle.flexors}</div>
-                    <div>踝關節背屈 Ankle Dorsiflexors: ${rightScores.ankle.dorsiflexors}</div>
-                    <div style="margin-top: 10px; font-weight: bold;">右側總分 Right Total: ${rightTotal}</div>
+                    <h3>Right Side</h3>
+                    <div>Elbow Flexors: ${rightScores.elbow.flexors}</div>
+                    <div>Elbow Extensors: ${rightScores.elbow.extensors}</div>
+                    <div>Wrist Flexors: ${rightScores.wrist.flexors}</div>
+                    <div>Wrist Extensors: ${rightScores.wrist.extensors}</div>
+                    <div>Knee Flexors: ${rightScores.knee.flexors}</div>
+                    <div>Knee Extensors: ${rightScores.knee.extensors}</div>
+                    <div>Ankle Plantar Flexors: ${rightScores.ankle.flexors}</div>
+                    <div>Ankle Dorsiflexors: ${rightScores.ankle.dorsiflexors}</div>
                 </div>
-            </div>
-            <div style="margin-top: 20px; font-weight: bold; font-size: 1.2em;">
-                總分 Total Score: ${leftTotal + rightTotal}
             </div>
         `;
 
-        // 顯示結果
         var resultDiv = document.getElementById('result');
         resultDiv.innerHTML = resultText;
     }
