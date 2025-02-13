@@ -92,133 +92,189 @@
                 font-size: 18px;
             }
         }
+        
         select {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            background-color: white
+            background-color: white;
+            font-size: 16px;
         }
+
+        select:focus {
+            outline: none;
+            border-color: #00796b;
+        }
+        
     </style>
 </head>
 <body>
 
-<div class="container">
-<h1>Modified Ashworth Scale Calculator</h1>
-
-    <form id="masForm">
-        <!-- 肘關節屈曲 -->
-        <div class="question">
-            <label>1. 肘關節屈曲 Elbow Flexors</label>
-            <div class="options">
-                <input type="radio" name="elbowFlexors" value="0" required checked> 0 - 肌張力無增加<br>
-                <input type="radio" name="elbowFlexors" value="1"> 1 - 輕微增加，關節末端出現最小阻力<br>
-                <input type="radio" name="elbowFlexors" value="1.5"> 1+ - 輕微增加，關節活動範圍前半段有最小阻力<br>
-                <input type="radio" name="elbowFlexors" value="2"> 2 - 大部分關節活動範圍有較明顯阻力<br>
-                <input type="radio" name="elbowFlexors" value="3"> 3 - 關節活動範圍有強烈阻力，被動活動困難<br>
-                <input type="radio" name="elbowFlexors" value="4"> 4 - 關節僵硬，無法進行被動活動<br>
-            </div>
-        </div>
-
-        <!-- 肘關節伸展 -->
-        <div class="question">
-            <label>2. 肘關節伸展 Elbow Extensors</label>
-            <div class="options">
-                <input type="radio" name="elbowExtensors" value="0" required checked> 0 - 肌張力無增加<br>
-                <input type="radio" name="elbowExtensors" value="1"> 1 - 輕微增加，關節末端出現最小阻力<br>
-                <input type="radio" name="elbowExtensors" value="1.5"> 1+ - 輕微增加，關節活動範圍前半段有最小阻力<br>
-                <input type="radio" name="elbowExtensors" value="2"> 2 - 大部分關節活動範圍有較明顯阻力<br>
-                <input type="radio" name="elbowExtensors" value="3"> 3 - 關節活動範圍有強烈阻力，被動活動困難<br>
-                <input type="radio" name="elbowExtensors" value="4"> 4 - 關節僵硬，無法進行被動活動<br>
-            </div>
-        </div>
-
-        <!-- 腕關節屈曲 -->
-        <div class="question">
-            <label>3. 腕關節屈曲 Wrist Flexors</label>
-            <div class="options">
-                <input type="radio" name="wristFlexors" value="0" required checked> 0 - 肌張力無增加<br>
-                <input type="radio" name="wristFlexors" value="1"> 1 - 輕微增加，關節末端出現最小阻力<br>
-                <input type="radio" name="wristFlexors" value="1.5"> 1+ - 輕微增加，關節活動範圍前半段有最小阻力<br>
-                <input type="radio" name="wristFlexors" value="2"> 2 - 大部分關節活動範圍有較明顯阻力<br>
-                <input type="radio" name="wristFlexors" value="3"> 3 - 關節活動範圍有強烈阻力，被動活動困難<br>
-                <input type="radio" name="wristFlexors" value="4"> 4 - 關節僵硬，無法進行被動活動<br>
-            </div>
-        </div>
-
-        <!-- 膝關節屈曲 -->
-        <div class="question">
-            <label>4. 膝關節屈曲 Knee Flexors</label>
-            <div class="options">
-                <input type="radio" name="kneeFlexors" value="0" required checked> 0 - 肌張力無增加<br>
-                <input type="radio" name="kneeFlexors" value="1"> 1 - 輕微增加，關節末端出現最小阻力<br>
-                <input type="radio" name="kneeFlexors" value="1.5"> 1+ - 輕微增加，關節活動範圍前半段有最小阻力<br>
-                <input type="radio" name="kneeFlexors" value="2"> 2 - 大部分關節活動範圍有較明顯阻力<br>
-                <input type="radio" name="kneeFlexors" value="3"> 3 - 關節活動範圍有強烈阻力，被動活動困難<br>
-                <input type="radio" name="kneeFlexors" value="4"> 4 - 關節僵硬，無法進行被動活動<br>
-            </div>
-        </div>
-
-        <!-- 踝關節蹠屈 -->
-        <div class="question">
-            <label>5. 踝關節蹠屈 Ankle Plantar Flexors</label>
-            <div class="options">
-                <input type="radio" name="ankleFlexors" value="0" required checked> 0 - 肌張力無增加<br>
-                <input type="radio" name="ankleFlexors" value="1"> 1 - 輕微增加，關節末端出現最小阻力<br>
-                <input type="radio" name="ankleFlexors" value="1.5"> 1+ - 輕微增加，關節活動範圍前半段有最小阻力<br>
-                <input type="radio" name="ankleFlexors" value="2"> 2 - 大部分關節活動範圍有較明顯阻力<br>
-                <input type="radio" name="ankleFlexors" value="3"> 3 - 關節活動範圍有強烈阻力，被動活動困難<br>
-                <input type="radio" name="ankleFlexors" value="4"> 4 - 關節僵硬，無法進行被動活動<br>
-            </div>
-        </div>
-
-        <button type="button" class="btn" onclick="calculateMAS()">計算</button>
-    </form>
-
-<!-- 結果顯示 -->
-<div class="result" id="result"></div>
-
-</div>
-
-<div class="footer">
-    &copy; BigbigDada
-</div>
-
-    <script>
-    function calculateMAS() {
-        var form = document.getElementById('masForm');
-        var elements = form.elements;
-
-        // 獲取每個關節的分數
-        var elbowFlexors = parseFloat(elements['elbowFlexors'].value);
-        var elbowExtensors = parseFloat(elements['elbowExtensors'].value);
-        var wristFlexors = parseFloat(elements['wristFlexors'].value);
-        var wristExtensors = parseFloat(elements['wristExtensors'].value);
-        var kneeFlexors = parseFloat(elements['kneeFlexors'].value);
-        var kneeExtensors = parseFloat(elements['kneeExtensors'].value);
-        var ankleFlexors = parseFloat(elements['ankleFlexors'].value);
-        var ankleDorsiflexors = parseFloat(elements['ankleDorsiflexors'].value);
-
-        // 構建結果文本
-        var resultText = `
-            <div>MAS Score 評估結果：</div>
-            <div style="font-size: 18px; margin-top: 15px;">
-                <div>Elbow Flexors: ${elbowFlexors}</div>
-                <div>Elbow Extensors: ${elbowExtensors}</div>
-                <div>Wrist Flexors: ${wristFlexors}</div>
-                <div>Wrist Extensors: ${wristExtensors}</div>
-                <div>Knee Flexors: ${kneeFlexors}</div>
-                <div>Knee Extensors: ${kneeExtensors}</div>
-                <div>Ankle Plantar Flexors: ${ankleFlexors}</div>
-                <div>Ankle Dorsiflexors: ${ankleDorsiflexors}</div>
-            </div>
-        `;
-
-        // 顯示結果
-        var resultDiv = document.getElementById('result');
-        resultDiv.innerHTML = resultText;
-    }
-    </script>
+    <div class="container">
+        <h1>Modified Ashworth Scale Calculator</h1>
+        
+            <form id="masForm">
+                <!-- 肘關節屈曲 -->
+                <div class="question">
+                    <label>1. 肘關節屈曲 Elbow Flexors</label>
+                    <div class="options">
+                        <select name="elbowFlexors" required>
+                            <option value="0">0 - 肌張力無增加</option>
+                            <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
+                            <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
+                            <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
+                            <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
+                            <option value="4">4 - 關節僵硬，無法進行被動活動</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <!-- 肘關節伸展 -->
+                <div class="question">
+                    <label>2. 肘關節伸展 Elbow Extensors</label>
+                    <div class="options">
+                        <select name="elbowExtensors" required>
+                            <option value="0">0 - 肌張力無增加</option>
+                            <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
+                            <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
+                            <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
+                            <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
+                            <option value="4">4 - 關節僵硬，無法進行被動活動</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <!-- 腕關節屈曲 -->
+                <div class="question">
+                    <label>3. 腕關節屈曲 Wrist Flexors</label>
+                    <div class="options">
+                        <select name="wristFlexors" required>
+                            <option value="0">0 - 肌張力無增加</option>
+                            <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
+                            <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
+                            <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
+                            <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
+                            <option value="4">4 - 關節僵硬，無法進行被動活動</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <!-- 腕關節伸展 (新增) -->
+                <div class="question">
+                    <label>4. 腕關節伸展 Wrist Extensors</label>
+                    <div class="options">
+                        <select name="wristExtensors" required>
+                            <option value="0">0 - 肌張力無增加</option>
+                            <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
+                            <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
+                            <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
+                            <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
+                            <option value="4">4 - 關節僵硬，無法進行被動活動</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <!-- 膝關節屈曲 -->
+                <div class="question">
+                    <label>5. 膝關節屈曲 Knee Flexors</label>
+                    <div class="options">
+                        <select name="kneeFlexors" required>
+                            <option value="0">0 - 肌張力無增加</option>
+                            <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
+                            <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
+                            <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
+                            <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
+                            <option value="4">4 - 關節僵硬，無法進行被動活動</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <!-- 膝關節伸展 (新增) -->
+                <div class="question">
+                    <label>6. 膝關節伸展 Knee Extensors</label>
+                    <div class="options">
+                        <select name="kneeExtensors" required>
+                            <option value="0">0 - 肌張力無增加</option>
+                            <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
+                            <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
+                            <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
+                            <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
+                            <option value="4">4 - 關節僵硬，無法進行被動活動</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <!-- 踝關節蹠屈 -->
+                <div class="question">
+                    <label>7. 踝關節蹠屈 Ankle Plantar Flexors</label>
+                    <div class="options">
+                        <select name="ankleFlexors" required>
+                            <option value="0">0 - 肌張力無增加</option>
+                            <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
+                            <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
+                            <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
+                            <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
+                            <option value="4">4 - 關節僵硬，無法進行被動活動</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <!-- 踝關節背屈 (新增) -->
+                <div class="question">
+                    <label>8. 踝關節背屈 Ankle Dorsiflexors</label>
+                    <div class="options">
+                        <select name="ankleDorsiflexors" required>
+                            <option value="0">0 - 肌張力無增加</option>
+                            <option value="1">1 - 輕微增加，關節末端出現最小阻力</option>
+                            <option value="1.5">1+ - 輕微增加，關節活動範圍前半段有最小阻力</option>
+                            <option value="2">2 - 大部分關節活動範圍有較明顯阻力</option>
+                            <option value="3">3 - 關節活動範圍有強烈阻力，被動活動困難</option>
+                            <option value="4">4 - 關節僵硬，無法進行被動活動</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <button type="button" class="btn" onclick="calculateMAS()">計算</button>
+            </form>
+        
+        // ... existing code ...
+        
+        <script>
+        function calculateMAS() {
+            var form = document.getElementById('masForm');
+            var elements = form.elements;
+        
+            // 獲取每個關節的分數
+            var elbowFlexors = parseFloat(elements['elbowFlexors'].value);
+            var elbowExtensors = parseFloat(elements['elbowExtensors'].value);
+            var wristFlexors = parseFloat(elements['wristFlexors'].value);
+            var wristExtensors = parseFloat(elements['wristExtensors'].value);
+            var kneeFlexors = parseFloat(elements['kneeFlexors'].value);
+            var kneeExtensors = parseFloat(elements['kneeExtensors'].value);
+            var ankleFlexors = parseFloat(elements['ankleFlexors'].value);
+            var ankleDorsiflexors = parseFloat(elements['ankleDorsiflexors'].value);
+        
+            // 構建結果文本
+            var resultText = `
+                <div>MAS Score 評估結果：</div>
+                <div style="font-size: 18px; margin-top: 15px;">
+                    <div>Elbow Flexors: ${elbowFlexors}</div>
+                    <div>Elbow Extensors: ${elbowExtensors}</div>
+                    <div>Wrist Flexors: ${wristFlexors}</div>
+                    <div>Wrist Extensors: ${wristExtensors}</div>
+                    <div>Knee Flexors: ${kneeFlexors}</div>
+                    <div>Knee Extensors: ${kneeExtensors}</div>
+                    <div>Ankle Plantar Flexors: ${ankleFlexors}</div>
+                    <div>Ankle Dorsiflexors: ${ankleDorsiflexors}</div>
+                </div>
+            `;
+        
+            // 顯示結果
+            var resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = resultText;
+        }
+        </script>
 
 </body>
 </html>             
