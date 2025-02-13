@@ -92,6 +92,13 @@
                 font-size: 18px;
             }
         }
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white
+        }
     </style>
 </head>
 <body>
@@ -186,18 +193,24 @@
         var elbowFlexors = parseFloat(elements['elbowFlexors'].value);
         var elbowExtensors = parseFloat(elements['elbowExtensors'].value);
         var wristFlexors = parseFloat(elements['wristFlexors'].value);
+        var wristExtensors = parseFloat(elements['wristExtensors'].value);
         var kneeFlexors = parseFloat(elements['kneeFlexors'].value);
+        var kneeExtensors = parseFloat(elements['kneeExtensors'].value);
         var ankleFlexors = parseFloat(elements['ankleFlexors'].value);
+        var ankleDorsiflexors = parseFloat(elements['ankleDorsiflexors'].value);
 
         // 構建結果文本
         var resultText = `
             <div>MAS Score 評估結果：</div>
             <div style="font-size: 18px; margin-top: 15px;">
-                <div>肘關節屈曲: ${elbowFlexors}</div>
-                <div>肘關節伸展: ${elbowExtensors}</div>
-                <div>腕關節屈曲: ${wristFlexors}</div>
-                <div>膝關節屈曲: ${kneeFlexors}</div>
-                <div>踝關節蹠屈: ${ankleFlexors}</div>
+                <div>Elbow Flexors: ${elbowFlexors}</div>
+                <div>Elbow Extensors: ${elbowExtensors}</div>
+                <div>Wrist Flexors: ${wristFlexors}</div>
+                <div>Wrist Extensors: ${wristExtensors}</div>
+                <div>Knee Flexors: ${kneeFlexors}</div>
+                <div>Knee Extensors: ${kneeExtensors}</div>
+                <div>Ankle Plantar Flexors: ${ankleFlexors}</div>
+                <div>Ankle Dorsiflexors: ${ankleDorsiflexors}</div>
             </div>
         `;
 
