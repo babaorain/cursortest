@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>打地鼠：震動反應賽</title>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#dff6e7;
+  --sky:#bfe9ff;
+  --grass:#2f9e69;
+  --grass-dark:#19734c;
+  --soil:#7a4a31;
+  --soil-dark:#4e2f22;
+  --panel:rgba(255,255,255,.78);
+  --ink:#203326;
+  --muted:#63756b;
+  --line:rgba(32,51,38,.14);
+  --good:#18a058;
+  --gold:#f6b93b;
+  --danger:#e4475b;
+  --blue:#2477d4;
+  --violet:#7048e8;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:var(--ink);background:linear-gradient(var(--sky) 0 38%,var(--bg) 38% 100%);user-select:none}
+button,select{font:inherit}
+body::before{content:"";position:fixed;left:0;right:0;bottom:0;height:34%;background:linear-gradient(180deg,var(--grass),var(--grass-dark));z-index:-1}
+.app{min-height:100vh;display:grid;grid-template-rows:auto 1fr;gap:12px;padding:max(14px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+.top{display:grid;grid-template-columns:minmax(190px,1fr) auto;gap:14px;align-items:start}
+.card,.board-wrap,.result{background:var(--panel);border:1px solid var(--line);box-shadow:0 18px 50px rgba(44,73,52,.18);backdrop-filter:blur(16px)}
+.brand{border-radius:18px;padding:13px 16px}
+.brand h1{margin:0;font-size:clamp(24px,3.5vw,38px);line-height:1;font-weight:950;letter-spacing:0}
+.brand p{margin:8px 0 0;color:var(--muted);font-weight:700;line-height:1.5;font-size:14px}
+.stats{border-radius:18px;padding:9px;display:grid;grid-template-columns:repeat(5,minmax(66px,auto));gap:7px}
+.stat{padding:7px 10px;border-radius:14px;background:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.65)}
+.stat span{display:block;color:var(--muted);font-size:11px;font-weight:850}
+.stat strong{display:block;margin-top:3px;font-size:22px;line-height:1;font-weight:950;font-variant-numeric:tabular-nums}
+.main{display:grid;grid-template-columns:minmax(250px,420px) minmax(300px,1fr);gap:16px;align-items:center;max-width:1100px;width:100%;margin:0 auto}
+.panel{border-radius:18px;padding:14px 15px}
+.rules{display:grid;gap:8px}
+.rule{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:14px;background:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.62);font-weight:800;color:#365143}
+.chip{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto;position:relative;overflow:hidden}
+.chip.mole{background:#b97846}
+.chip.star{background:var(--gold)}
+.chip.clock{background:var(--blue)}
+.chip.shield{background:var(--violet)}
+.chip.bomb{background:#2a2930}
+.chip::before,.chip::after{content:"";position:absolute}
+.chip.mole::before{width:20px;height:14px;border-radius:9px 9px 6px 6px;background:#f1c19a;bottom:6px;left:7px}
+.chip.mole::after{width:4px;height:4px;border-radius:50%;background:#231510;left:13px;top:13px;box-shadow:8px 0 #231510}
+.chip.star::before{width:23px;height:23px;background:white;clip-path:polygon(50% 0,62% 34%,98% 35%,69% 56%,79% 91%,50% 70%,21% 91%,31% 56%,2% 35%,38% 34%)}
+.chip.clock::before{width:21px;height:21px;border-radius:50%;background:white}
+.chip.clock::after{width:3px;height:10px;background:var(--blue);left:16px;top:9px;box-shadow:4px 5px 0 -1px var(--blue);transform-origin:bottom}
+.chip.shield::before{width:22px;height:25px;background:white;clip-path:polygon(50% 0,88% 13%,80% 70%,50% 100%,20% 70%,12% 13%)}
+.chip.bomb::before{width:22px;height:22px;border-radius:50%;background:#11131a;bottom:5px;left:6px}
+.chip.bomb::after{width:9px;height:9px;border-radius:2px;background:#ffb84d;right:5px;top:4px;box-shadow:0 0 12px #ffb84d}
+.controls{display:grid;gap:12px;margin-top:14px}
+.control-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:grid;gap:6px;color:var(--muted);font-size:12px;font-weight:850}
+select{width:100%;border:1px solid var(--line);border-radius:13px;background:white;color:var(--ink);padding:11px 12px;font-weight:850;outline:none}
+.button-row{display:grid;grid-template-columns:1fr 1fr 54px;gap:10px}
+.btn{border:0;border-radius:14px;padding:12px 14px;font-weight:950;cursor:pointer;box-shadow:0 12px 24px rgba(32,51,38,.14);transition:transform .1s ease,filter .12s ease}
+.btn:active{transform:translateY(2px)}
+.start{background:var(--good);color:#fff}
+.reset{background:#fff;color:#345142;border:1px solid var(--line)}
+.pause{background:#26362d;color:#fff;display:grid;place-items:center;padding:0}
+.pause svg{width:24px;height:24px;stroke-width:2.4}
+.status{min-height:40px;border-radius:14px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.62);padding:10px 11px;color:#365143;font-weight:850;line-height:1.35}
+.board-wrap{position:relative;border-radius:24px;padding:clamp(12px,1.6vw,18px)}
+.board{display:grid;grid-template-columns:repeat(3,minmax(76px,1fr));gap:clamp(10px,1.7vw,17px);width:min(560px,52vw,calc(100vh - 220px));max-width:100%;margin:0 auto;aspect-ratio:1}
+.hole{position:relative;border:0;border-radius:24px;background:transparent;cursor:pointer;padding:0;overflow:hidden;isolation:isolate;touch-action:manipulation}
+.hole:focus-visible{outline:4px solid rgba(36,119,212,.45);outline-offset:2px}
+.hole::before{content:"";position:absolute;left:9%;right:9%;bottom:8%;height:38%;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#97603e 0 46%,#5c3827 47% 100%);box-shadow:inset 0 10px 16px rgba(0,0,0,.18),0 8px 0 rgba(53,101,61,.22);z-index:1}
+.hole::after{content:"";position:absolute;left:13%;right:13%;bottom:12%;height:13%;border-radius:999px;background:#42261b;opacity:.45;z-index:4}
+.sprite{position:absolute;left:50%;bottom:14%;width:68%;height:74%;transform:translate(-50%,100%) scale(.88);z-index:3;transition:transform .18s cubic-bezier(.2,1.2,.28,1);pointer-events:none}
+.hole.active .sprite{transform:translate(-50%,8%) scale(1)}
+.hole.hit .sprite{transform:translate(-50%,0) scale(1.08)}
+.sprite::before,.sprite::after,.face,.face::before,.face::after,.mark,.mark::before,.mark::after{content:"";position:absolute}
+.sprite.mole::before{left:16%;right:16%;bottom:4%;height:72%;border-radius:42% 42% 34% 34%;background:linear-gradient(#a76239,#754025);box-shadow:inset 10px -12px rgba(0,0,0,.08)}
+.sprite.mole::after{left:22%;top:4%;width:18%;height:18%;border-radius:50%;background:#8b4d2d;box-shadow:82% 0 #8b4d2d}
+.mole .face{left:28%;right:28%;top:32%;height:30%;border-radius:50%;background:#f0c099}
+.mole .face::before{width:8px;height:8px;border-radius:50%;background:#1d120d;left:18%;top:22%;box-shadow:28px 0 #1d120d}
+.mole .face::after{width:12px;height:7px;border-radius:0 0 12px 12px;border-bottom:3px solid #7b3329;left:50%;top:52%;transform:translateX(-50%)}
+.sprite.star::before{inset:10%;background:linear-gradient(160deg,#ffe97a,#f6b93b);clip-path:polygon(50% 0,62% 34%,98% 35%,69% 56%,79% 91%,50% 70%,21% 91%,31% 56%,2% 35%,38% 34%);filter:drop-shadow(0 10px 18px rgba(246,185,59,.32))}
+.sprite.star .face::before{width:8px;height:8px;border-radius:50%;background:#5b3b00;left:38%;top:44%;box-shadow:24px 0 #5b3b00}
+.sprite.star .face::after{width:22px;height:11px;border-radius:0 0 22px 22px;border-bottom:4px solid #5b3b00;left:50%;top:56%;transform:translateX(-50%)}
+.sprite.clock::before{inset:12%;border-radius:50%;background:linear-gradient(#fff,#d9ecff);border:8px solid #2477d4;box-shadow:0 12px 22px rgba(36,119,212,.25)}
+.sprite.clock .mark{left:48%;top:29%;width:6px;height:28%;border-radius:99px;background:#2477d4;transform-origin:bottom}
+.sprite.clock .mark::after{left:0;bottom:0;width:28px;height:6px;border-radius:99px;background:#2477d4;transform:rotate(35deg);transform-origin:left center}
+.sprite.shield::before{left:18%;right:18%;top:7%;bottom:4%;background:linear-gradient(160deg,#9275ff,#7048e8);clip-path:polygon(50% 0,88% 14%,80% 70%,50% 100%,20% 70%,12% 14%);filter:drop-shadow(0 12px 22px rgba(112,72,232,.25))}
+.sprite.shield::after{left:50%;top:32%;width:32%;height:16%;border-left:8px solid white;border-bottom:8px solid white;transform:translateX(-50%) rotate(-45deg);border-radius:2px}
+.sprite.bomb::before{left:21%;right:21%;bottom:5%;height:58%;border-radius:50%;background:radial-gradient(circle at 32% 28%,#4e5260,#11131a 62%);box-shadow:0 12px 22px rgba(0,0,0,.28)}
+.sprite.bomb::after{right:22%;top:9%;width:18%;height:18%;border-radius:3px;background:#ffb84d;box-shadow:0 0 20px #ffb84d,7px -5px 0 -3px #fff}
+.pop{position:absolute;left:50%;top:22%;z-index:8;transform:translate(-50%,0);font-weight:950;font-size:18px;pointer-events:none;animation:pop .65s ease forwards;text-shadow:0 2px 0 rgba(255,255,255,.7)}
+@keyframes pop{to{opacity:0;transform:translate(-50%,-34px) scale(1.08)}}
+.shake{animation:shake .28s linear}
+@keyframes shake{25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
+.overlay{position:fixed;inset:0;display:grid;place-items:center;padding:22px;background:rgba(22,45,31,.25);opacity:0;pointer-events:none;transition:opacity .18s ease;backdrop-filter:blur(3px)}
+.overlay.show{opacity:1;pointer-events:auto}
+.result{width:min(520px,100%);border-radius:26px;padding:26px;text-align:center}
+.result h2{margin:0 0 8px;font-size:clamp(30px,7vw,54px);line-height:1;font-weight:950}
+.result p{margin:0 auto 18px;max-width:420px;color:var(--muted);font-weight:700;line-height:1.55}
+.result .row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+@media (max-width:900px){
+  .top{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(5,1fr)}
+  .main{grid-template-columns:1fr;align-items:start}
+  .rules{grid-template-columns:repeat(2,1fr)}
+  .brand p{font-size:13px}
+}
+@media (max-width:560px){
+  .app{padding:12px;gap:10px}
+  .brand{display:none}
+  .stats{grid-template-columns:repeat(5,1fr);gap:5px;padding:7px}
+  .stat{padding:7px 6px;border-radius:11px}
+  .stat strong{font-size:17px}
+  .stat span{font-size:10px}
+  .panel{padding:11px}
+  .rules{display:none}
+  .control-row{grid-template-columns:1fr 1fr}
+  .button-row{grid-template-columns:1fr 1fr 50px}
+  .board-wrap{border-radius:20px;padding:10px}
+  .board{gap:8px}
+  .hole{border-radius:18px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <section class="card brand">
+      <h1>打地鼠：震動反應賽</h1>
+      <p>打中地鼠與獎勵、避開炸彈。手機會有震動回饋，鍵盤可用 1 到 9 快速敲洞。</p>
+    </section>
+    <section class="card stats" aria-live="polite">
+      <div class="stat"><span>分數</span><strong id="score">0</strong></div>
+      <div class="stat"><span>時間</span><strong id="time">30</strong></div>
+      <div class="stat"><span>連擊</span><strong id="combo">0</strong></div>
+      <div class="stat"><span>護盾</span><strong id="shield">0</strong></div>
+      <div class="stat"><span>最佳</span><strong id="best">0</strong></div>
+    </section>
+  </header>
+  <main class="main">
+    <aside class="card panel">
+      <div class="rules" aria-label="規則">
+        <div class="rule"><span class="chip mole"></span><span>地鼠 +10，連擊越高越賺</span></div>
+        <div class="rule"><span class="chip star"></span><span>星星 +25，延長連擊</span></div>
+        <div class="rule"><span class="chip clock"></span><span>時鐘 +5 秒</span></div>
+        <div class="rule"><span class="chip shield"></span><span>護盾可擋下一顆炸彈</span></div>
+        <div class="rule"><span class="chip bomb"></span><span>炸彈 -18，沒有護盾會短暫暈眩</span></div>
+      </div>
+      <div class="controls">
+        <div class="control-row">
+          <label class="field">時間
+            <select id="timeSelect">
+              <option value="20">20 秒</option>
+              <option value="30" selected>30 秒</option>
+              <option value="45">45 秒</option>
+              <option value="60">60 秒</option>
+            </select>
+          </label>
+          <label class="field">節奏
+            <select id="paceSelect">
+              <option value="relaxed">輕鬆</option>
+              <option value="normal" selected>標準</option>
+              <option value="wild">狂熱</option>
+            </select>
+          </label>
+        </div>
+        <div class="button-row">
+          <button class="btn start" id="startBtn" type="button">開始</button>
+          <button class="btn reset" id="resetBtn" type="button">重設</button>
+          <button class="btn pause" id="pauseBtn" type="button" aria-label="暫停或繼續">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 5v14M16 5v14"/></svg>
+          </button>
+        </div>
+        <div class="status" id="status">準備好了。選好時間與節奏後開始敲洞。</div>
+      </div>
+    </aside>
+    <section class="board-wrap" id="boardWrap">
+      <div class="board" id="board" aria-label="打地鼠洞口棋盤"></div>
+    </section>
+  </main>
+</div>
+<div class="overlay" id="overlay">
+  <section class="result">
+    <h2 id="resultTitle">時間到</h2>
+    <p id="resultText">本局分數 0。</p>
+    <div class="row">
+      <button class="btn start" id="againBtn" type="button">再玩一次</button>
+      <button class="btn reset" id="clearBestBtn" type="button">清除最佳</button>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const ITEMS = {
+    mole: { score: 10, label: "地鼠", good: true, weight: 48, color: "#18a058" },
+    star: { score: 25, label: "星星", good: true, weight: 12, color: "#f6b93b" },
+    clock: { score: 0, label: "時鐘", good: true, weight: 10, color: "#2477d4" },
+    shield: { score: 0, label: "護盾", good: true, weight: 9, color: "#7048e8" },
+    bomb: { score: -18, label: "炸彈", good: false, weight: 21, color: "#e4475b" }
+  };
+
+  const board = document.getElementById("board");
+  const boardWrap = document.getElementById("boardWrap");
+  const scoreEl = document.getElementById("score");
+  const timeEl = document.getElementById("time");
+  const comboEl = document.getElementById("combo");
+  const shieldEl = document.getElementById("shield");
+  const bestEl = document.getElementById("best");
+  const statusEl = document.getElementById("status");
+  const timeSelect = document.getElementById("timeSelect");
+  const paceSelect = document.getElementById("paceSelect");
+  const startBtn = document.getElementById("startBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const pauseBtn = document.getElementById("pauseBtn");
+  const overlay = document.getElementById("overlay");
+  const resultTitle = document.getElementById("resultTitle");
+  const resultText = document.getElementById("resultText");
+  const againBtn = document.getElementById("againBtn");
+  const clearBestBtn = document.getElementById("clearBestBtn");
+
+  const storageKey = "whackVibrateBestPolished";
+  const holes = [];
+  const state = {
+    playing: false,
+    paused: false,
+    stunnedUntil: 0,
+    score: 0,
+    timeLeft: Number(timeSelect.value),
+    combo: 0,
+    maxCombo: 0,
+    shield: 0,
+    best: Number(localStorage.getItem(storageKey) || 0),
+    active: new Map(),
+    tickTimer: null,
+    spawnTimer: null,
+    startAt: 0
+  };
+
+  function buildBoard() {
+    board.innerHTML = "";
+    for (let i = 0; i < 9; i++) {
+      const hole = document.createElement("button");
+      hole.className = "hole";
+      hole.type = "button";
+      hole.dataset.index = String(i);
+      hole.setAttribute("aria-label", `洞口 ${i + 1}`);
+      hole.innerHTML = '<div class="sprite"><div class="face"></div><div class="mark"></div></div>';
+      board.appendChild(hole);
+      holes.push(hole);
+    }
+  }
+
+  function render() {
+    scoreEl.textContent = state.score.toString();
+    timeEl.textContent = state.timeLeft.toString();
+    comboEl.textContent = state.combo.toString();
+    shieldEl.textContent = state.shield.toString();
+    bestEl.textContent = state.best.toString();
+  }
+
+  function setStatus(text) {
+    statusEl.textContent = text;
+  }
+
+  function vibrate(pattern) {
+    if (navigator.vibrate) navigator.vibrate(pattern);
+  }
+
+  function startGame() {
+    clearTimers();
+    clearAll();
+    state.playing = true;
+    state.paused = false;
+    state.stunnedUntil = 0;
+    state.score = 0;
+    state.combo = 0;
+    state.maxCombo = 0;
+    state.shield = 0;
+    state.timeLeft = Number(timeSelect.value);
+    state.startAt = performance.now();
+    timeSelect.disabled = true;
+    paceSelect.disabled = true;
+    overlay.classList.remove("show");
+    setStatus("開始。打中好目標、避開炸彈。");
+    render();
+    state.tickTimer = setInterval(tick, 1000);
+    spawnLoop(250);
+  }
+
+  function resetGame() {
+    clearTimers();
+    clearAll();
+    state.playing = false;
+    state.paused = false;
+    state.stunnedUntil = 0;
+    state.score = 0;
+    state.combo = 0;
+    state.maxCombo = 0;
+    state.shield = 0;
+    state.timeLeft = Number(timeSelect.value);
+    timeSelect.disabled = false;
+    paceSelect.disabled = false;
+    overlay.classList.remove("show");
+    boardWrap.classList.remove("shake");
+    setStatus("已重設。準備好了就開始。");
+    render();
+  }
+
+  function clearTimers() {
+    clearInterval(state.tickTimer);
+    clearTimeout(state.spawnTimer);
+    state.tickTimer = null;
+    state.spawnTimer = null;
+  }
+
+  function tick() {
+    if (!state.playing || state.paused) return;
+    state.timeLeft--;
+    render();
+    if (state.timeLeft <= 0) endGame();
+  }
+
+  function paceConfig() {
+    const elapsed = Math.max(0, (performance.now() - state.startAt) / 1000);
+    const pace = paceSelect.value;
+    const base = pace === "relaxed" ? 920 : pace === "wild" ? 560 : 720;
+    const min = pace === "relaxed" ? 520 : pace === "wild" ? 310 : 410;
+    const life = pace === "relaxed" ? 1120 : pace === "wild" ? 760 : 930;
+    const delay = Math.max(min, base - elapsed * (pace === "wild" ? 12 : 8));
+    const lifeTime = Math.max(520, life - elapsed * (pace === "wild" ? 9 : 6));
+    const multi = elapsed > 18 ? (pace === "wild" ? 3 : 2) : elapsed > 9 ? 2 : 1;
+    return { delay, lifeTime, multi };
+  }
+
+  function spawnLoop(delay = null) {
+    if (!state.playing) return;
+    const cfg = paceConfig();
+    state.spawnTimer = setTimeout(() => {
+      if (state.playing && !state.paused && performance.now() >= state.stunnedUntil) {
+        spawnItems(cfg);
+      }
+      spawnLoop();
+    }, delay ?? cfg.delay + Math.random() * 180);
+  }
+
+  function spawnItems(cfg) {
+    pruneExpired(true);
+    const count = Math.min(3, cfg.multi);
+    const available = holes.map((_, index) => index).filter(index => !state.active.has(index));
+    shuffle(available);
+    for (let i = 0; i < Math.min(count, available.length); i++) {
+      showItem(available[i], randomItem(), cfg.lifeTime + Math.random() * 180);
+    }
+  }
+
+  function randomItem() {
+    const entries = Object.entries(ITEMS);
+    const total = entries.reduce((sum, [, item]) => sum + item.weight, 0);
+    let roll = Math.random() * total;
+    for (const [type, item] of entries) {
+      roll -= item.weight;
+      if (roll <= 0) return type;
+    }
+    return "mole";
+  }
+
+  function showItem(index, type, lifeTime) {
+    const hole = holes[index];
+    const sprite = hole.querySelector(".sprite");
+    sprite.className = `sprite ${type}`;
+    hole.classList.add("active");
+    hole.classList.remove("hit");
+    hole.dataset.type = type;
+    state.active.set(index, { type, expireAt: performance.now() + lifeTime });
+  }
+
+  function pruneExpired(resetCombo) {
+    const now = performance.now();
+    for (const [index, item] of state.active) {
+      if (item.expireAt <= now) {
+        const missedGood = ITEMS[item.type].good && item.type !== "shield" && state.playing && resetCombo;
+        hideItem(index);
+        if (missedGood) state.combo = 0;
+      }
+    }
+    render();
+  }
+
+  function hideItem(index) {
+    const hole = holes[index];
+    hole.classList.remove("active", "hit");
+    state.active.delete(index);
+  }
+
+  function clearAll() {
+    state.active.clear();
+    holes.forEach(hole => {
+      hole.classList.remove("active", "hit");
+      hole.dataset.type = "";
+      const sprite = hole.querySelector(".sprite");
+      sprite.className = "sprite";
+    });
+  }
+
+  function hitHole(index) {
+    if (!state.playing || state.paused) return;
+    const now = performance.now();
+    if (now < state.stunnedUntil) return;
+    pruneExpired(false);
+    const item = state.active.get(index);
+    if (!item) {
+      state.combo = 0;
+      pop(index, "MISS", "#63756b");
+      render();
+      return;
+    }
+
+    const config = ITEMS[item.type];
+    const hole = holes[index];
+    hole.classList.add("hit");
+    setTimeout(() => hole.classList.remove("hit"), 120);
+    hideItem(index);
+
+    if (item.type === "bomb") {
+      handleBomb(index);
+      render();
+      return;
+    }
+
+    state.combo++;
+    state.maxCombo = Math.max(state.maxCombo, state.combo);
+    const multiplier = 1 + Math.floor(Math.max(0, state.combo - 1) / 6);
+
+    if (item.type === "clock") {
+      state.timeLeft += 5;
+      pop(index, "+5s", config.color);
+      setStatus("加 5 秒。節奏繼續。");
+      vibrate(45);
+    } else if (item.type === "shield") {
+      state.shield = Math.min(3, state.shield + 1);
+      pop(index, "護盾", config.color);
+      setStatus("取得護盾，可擋下一顆炸彈。");
+      vibrate(45);
+    } else {
+      const gain = config.score * multiplier;
+      state.score += gain;
+      pop(index, `+${gain}`, config.color);
+      setStatus(`${config.label}命中，連擊 ${state.combo}。`);
+      vibrate(item.type === "star" ? 55 : 25);
+    }
+    render();
+  }
+
+  function handleBomb(index) {
+    if (state.shield > 0) {
+      state.shield--;
+      state.combo = Math.max(0, state.combo - 2);
+      pop(index, "擋下", "#7048e8");
+      setStatus("護盾擋下炸彈。");
+      vibrate([35, 25, 35]);
+      return;
+    }
+    state.score = Math.max(0, state.score + ITEMS.bomb.score);
+    state.combo = 0;
+    state.stunnedUntil = performance.now() + 900;
+    clearAll();
+    boardWrap.classList.remove("shake");
+    void boardWrap.offsetWidth;
+    boardWrap.classList.add("shake");
+    pop(index, "-18", ITEMS.bomb.color);
+    setStatus("踩到炸彈，短暫暈眩。");
+    vibrate([160, 70, 160]);
+  }
+
+  function pop(index, text, color) {
+    const hole = holes[index];
+    const el = document.createElement("div");
+    el.className = "pop";
+    el.textContent = text;
+    el.style.color = color;
+    hole.appendChild(el);
+    setTimeout(() => el.remove(), 700);
+  }
+
+  function togglePause() {
+    if (!state.playing) return;
+    state.paused = !state.paused;
+    if (state.paused) {
+      setStatus("已暫停。");
+    } else {
+      setStatus("繼續。");
+      state.stunnedUntil = 0;
+    }
+  }
+
+  function endGame() {
+    clearTimers();
+    clearAll();
+    state.playing = false;
+    state.paused = false;
+    timeSelect.disabled = false;
+    paceSelect.disabled = false;
+    if (state.score > state.best) {
+      state.best = state.score;
+      localStorage.setItem(storageKey, String(state.best));
+      resultTitle.textContent = "新紀錄";
+    } else {
+      resultTitle.textContent = "時間到";
+    }
+    resultText.textContent = `本局分數 ${state.score}，最高連擊 ${state.maxCombo}，最佳紀錄 ${state.best}。`;
+    setStatus("遊戲結束。");
+    render();
+    overlay.classList.add("show");
+  }
+
+  function shuffle(list) {
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+  }
+
+  board.addEventListener("pointerdown", event => {
+    const hole = event.target.closest(".hole");
+    if (!hole) return;
+    event.preventDefault();
+    hitHole(Number(hole.dataset.index));
+  });
+
+  addEventListener("keydown", event => {
+    if (/^[1-9]$/.test(event.key)) {
+      event.preventDefault();
+      hitHole(Number(event.key) - 1);
+    }
+    if (event.code === "Space") {
+      event.preventDefault();
+      state.playing ? togglePause() : startGame();
+    }
+    if (event.code === "KeyR") resetGame();
+  });
+
+  startBtn.addEventListener("click", startGame);
+  resetBtn.addEventListener("click", resetGame);
+  pauseBtn.addEventListener("click", togglePause);
+  againBtn.addEventListener("click", startGame);
+  clearBestBtn.addEventListener("click", () => {
+    state.best = 0;
+    localStorage.removeItem(storageKey);
+    render();
+    resultText.textContent = "最佳紀錄已清除。";
+  });
+  timeSelect.addEventListener("change", () => {
+    if (!state.playing) {
+      state.timeLeft = Number(timeSelect.value);
+      render();
+    }
+  });
+
+  buildBoard();
+  render();
+  requestAnimationFrame(function loop() {
+    if (state.playing && !state.paused) pruneExpired(true);
+    requestAnimationFrame(loop);
+  });
+})();
+</script>
+</body>
+</html>
