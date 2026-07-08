@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>藍速刺蝟：霓虹疾跑</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#071426;
+  --panel:rgba(7,20,38,.72);
+  --panel-strong:rgba(6,16,31,.9);
+  --line:rgba(126,232,255,.25);
+  --text:#eff9ff;
+  --muted:#9fc4d3;
+  --cyan:#35ddff;
+  --blue:#188cff;
+  --gold:#ffd84d;
+  --danger:#ff4f8b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:Inter,"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:var(--text);user-select:none}
+button{font:inherit}
+.stage{position:fixed;inset:0;overflow:hidden;background:#071426}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.hud{position:fixed;left:max(16px,env(safe-area-inset-left));right:max(16px,env(safe-area-inset-right));top:max(14px,env(safe-area-inset-top));display:flex;align-items:flex-start;justify-content:space-between;gap:14px;pointer-events:none}
+.title,.stats,.energy{pointer-events:auto;background:var(--panel);border:1px solid var(--line);box-shadow:0 22px 70px rgba(0,0,0,.28),0 0 40px rgba(53,221,255,.08);backdrop-filter:blur(16px)}
+.title{border-radius:18px;padding:12px 14px;min-width:220px}
+.title h1{margin:0;font-size:18px;line-height:1.1;font-weight:950;letter-spacing:0}
+.title p{margin:5px 0 0;color:var(--muted);font-size:12px;font-weight:700}
+.right-stack{display:grid;gap:10px}
+.stats{border-radius:18px;padding:10px 12px;display:grid;grid-template-columns:repeat(4,minmax(62px,auto));gap:8px}
+.metric span{display:block;color:var(--muted);font-size:11px;font-weight:800}
+.metric strong{display:block;margin-top:2px;font-size:20px;line-height:1;font-weight:950;font-variant-numeric:tabular-nums}
+.energy{border-radius:16px;padding:9px 10px}
+.energy-label{display:flex;justify-content:space-between;gap:12px;margin-bottom:7px;color:var(--muted);font-size:11px;font-weight:850}
+.energy-track{height:8px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
+.energy-fill{height:100%;width:100%;border-radius:inherit;background:linear-gradient(90deg,#35ddff,#7effb2,#ffd84d);box-shadow:0 0 18px rgba(53,221,255,.65);transition:width .12s linear}
+.buttons{position:fixed;left:max(16px,env(safe-area-inset-left));right:max(16px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}
+.cluster{display:flex;gap:10px;pointer-events:auto}
+.btn{width:56px;height:56px;border:1px solid rgba(255,255,255,.16);border-radius:18px;background:rgba(8,24,44,.75);color:var(--text);box-shadow:0 18px 42px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.04);display:grid;place-items:center;cursor:pointer;transition:transform .1s ease,background .12s ease}
+.btn:active{transform:translateY(2px) scale(.98)}
+.btn svg{width:25px;height:25px;stroke-width:2.4}
+.jump{width:78px;height:78px;border-radius:26px;background:linear-gradient(160deg,#1e98ff,#004ed6);box-shadow:0 22px 58px rgba(0,103,255,.38)}
+.dash{width:78px;height:78px;border-radius:26px;background:linear-gradient(160deg,#3af0ff,#1f75ff 54%,#6437ff);box-shadow:0 22px 58px rgba(53,221,255,.35)}
+.overlay{position:fixed;inset:0;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at 52% 45%,rgba(42,170,255,.24),rgba(0,0,0,.52));opacity:0;pointer-events:none;transition:opacity .18s ease}
+.overlay.show{opacity:1;pointer-events:auto}
+.modal{width:min(560px,100%);text-align:center;border:1px solid rgba(126,232,255,.28);border-radius:28px;background:rgba(5,16,31,.88);box-shadow:0 30px 90px rgba(0,0,0,.45),0 0 65px rgba(53,221,255,.18);padding:28px;backdrop-filter:blur(18px)}
+.modal h2{margin:0 0 8px;font-size:clamp(30px,7vw,58px);line-height:1;font-weight:950;text-shadow:0 0 32px rgba(53,221,255,.32)}
+.modal p{margin:0 auto 20px;max-width:450px;color:var(--muted);font-size:15px;line-height:1.58;font-weight:650}
+.modal-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.primary,.secondary{border:0;border-radius:15px;padding:12px 18px;min-width:132px;font-weight:950;cursor:pointer}
+.primary{background:linear-gradient(135deg,#35ddff,#188cff);color:#041324;box-shadow:0 16px 34px rgba(53,221,255,.24)}
+.secondary{background:rgba(255,255,255,.09);color:#eafaff;border:1px solid rgba(255,255,255,.14)}
+.notice{position:fixed;left:50%;bottom:calc(max(20px,env(safe-area-inset-bottom)) + 6px);transform:translateX(-50%);padding:9px 14px;border-radius:999px;background:rgba(5,16,31,.88);border:1px solid rgba(126,232,255,.28);box-shadow:0 14px 34px rgba(0,0,0,.32);font-size:13px;font-weight:900;opacity:0;transition:opacity .2s ease;pointer-events:none}
+.notice.show{opacity:1}
+@media (max-width:760px){
+  .title{display:none}
+  .hud{display:block}
+  .right-stack{width:100%}
+  .stats{grid-template-columns:repeat(4,1fr);padding:9px}
+  .metric strong{font-size:17px}
+  .energy{padding:8px 9px}
+  .btn{width:52px;height:52px;border-radius:17px}
+  .jump,.dash{width:76px;height:76px;border-radius:25px}
+}
+</style>
+</head>
+<body>
+<main class="stage">
+  <canvas id="game" aria-label="藍速刺蝟跑酷遊戲畫面"></canvas>
+  <section class="hud">
+    <div class="title">
+      <h1>藍速刺蝟</h1>
+      <p>雙段跳、集環、衝刺穿越霓虹賽道。</p>
+    </div>
+    <div class="right-stack">
+      <div class="stats" aria-live="polite">
+        <div class="metric"><span>分數</span><strong id="score">0</strong></div>
+        <div class="metric"><span>金環</span><strong id="rings">0</strong></div>
+        <div class="metric"><span>最佳</span><strong id="best">0</strong></div>
+        <div class="metric"><span>連擊</span><strong id="combo">1x</strong></div>
+      </div>
+      <div class="energy" aria-label="衝刺能量">
+        <div class="energy-label"><span>衝刺能量</span><span id="energyText">100%</span></div>
+        <div class="energy-track"><div class="energy-fill" id="energyFill"></div></div>
+      </div>
+    </div>
+  </section>
+  <div class="buttons" aria-label="遊戲操作">
+    <div class="cluster">
+      <button class="btn" id="pauseBtn" type="button" aria-label="暫停或繼續">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 5v14M16 5v14"/></svg>
+      </button>
+      <button class="btn" id="resetBtn" type="button" aria-label="重新開始">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v6h6"/></svg>
+      </button>
+    </div>
+    <div class="cluster">
+      <button class="btn dash" id="dashBtn" type="button" aria-label="衝刺">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 3 4 14h7l-1 7 10-12h-7l0-6z"/></svg>
+      </button>
+      <button class="btn jump" id="jumpBtn" type="button" aria-label="跳躍">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="overlay show" id="overlay">
+    <div class="modal">
+      <h2 id="modalTitle">霓虹疾跑</h2>
+      <p id="modalText">按空白鍵或點擊跳躍，空中可再跳一次。Shift 或右側閃電鍵衝刺，滿能量時可撞碎障礙。</p>
+      <div class="modal-row">
+        <button class="primary" id="startBtn" type="button">開始衝刺</button>
+        <button class="secondary" id="clearBtn" type="button">清除最佳</button>
+      </div>
+    </div>
+  </div>
+  <div class="notice" id="notice" role="status"></div>
+</main>
+<script>
+(() => {
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
+  const scoreEl = document.getElementById("score");
+  const ringsEl = document.getElementById("rings");
+  const bestEl = document.getElementById("best");
+  const comboEl = document.getElementById("combo");
+  const energyFill = document.getElementById("energyFill");
+  const energyText = document.getElementById("energyText");
+  const overlay = document.getElementById("overlay");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalText = document.getElementById("modalText");
+  const startBtn = document.getElementById("startBtn");
+  const clearBtn = document.getElementById("clearBtn");
+  const jumpBtn = document.getElementById("jumpBtn");
+  const dashBtn = document.getElementById("dashBtn");
+  const pauseBtn = document.getElementById("pauseBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const notice = document.getElementById("notice");
+
+  const storageKey = "blueSpeedHedgehogBest";
+  const state = {
+    mode: "ready",
+    width: 0,
+    height: 0,
+    dpr: 1,
+    ground: 0,
+    last: 0,
+    frame: 0,
+    score: 0,
+    rings: 0,
+    combo: 1,
+    comboTimer: 0,
+    best: Number(localStorage.getItem(storageKey) || 0),
+    speed: 520,
+    energy: 1,
+    dash: 0,
+    invincible: 0,
+    nextHazard: 0,
+    nextRing: 620,
+    shake: 0,
+    player: { x: 112, y: 0, w: 58, h: 66, vy: 0, jumps: 0, spin: 0, run: 0 },
+    hazards: [],
+    ringsList: [],
+    particles: [],
+    stars: Array.from({ length: 70 }, () => ({ x: Math.random(), y: Math.random(), a: .25 + Math.random() * .75 })),
+    lanes: Array.from({ length: 14 }, (_, i) => ({ x: i * 180, z: .45 + Math.random() * .75 }))
+  };
+
+  function resize() {
+    state.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    state.width = innerWidth;
+    state.height = innerHeight;
+    canvas.width = Math.floor(state.width * state.dpr);
+    canvas.height = Math.floor(state.height * state.dpr);
+    ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+    state.ground = Math.max(245, state.height - Math.min(116, state.height * .16));
+    if (state.player.y === 0 || state.player.y > state.ground) state.player.y = state.ground - state.player.h;
+  }
+
+  function reset(mode = "playing") {
+    state.mode = mode;
+    state.score = 0;
+    state.rings = 0;
+    state.combo = 1;
+    state.comboTimer = 0;
+    state.speed = 520;
+    state.energy = 1;
+    state.dash = 0;
+    state.invincible = 1.2;
+    state.nextHazard = 620;
+    state.nextRing = 460;
+    state.shake = 0;
+    state.player = { x: Math.min(122, state.width * .18), y: state.ground - 66, w: 58, h: 66, vy: 0, jumps: 0, spin: 0, run: 0 };
+    state.hazards = [];
+    state.ringsList = [];
+    state.particles = [];
+    state.last = performance.now();
+    renderStats();
+    if (mode === "playing") hideOverlay();
+  }
+
+  function renderStats() {
+    scoreEl.textContent = Math.floor(state.score).toString();
+    ringsEl.textContent = state.rings.toString();
+    bestEl.textContent = state.best.toString();
+    comboEl.textContent = state.combo + "x";
+    const pct = Math.round(state.energy * 100);
+    energyFill.style.width = pct + "%";
+    energyText.textContent = pct + "%";
+  }
+
+  function showOverlay(title, text, buttonText = "開始衝刺") {
+    modalTitle.textContent = title;
+    modalText.textContent = text;
+    startBtn.textContent = buttonText;
+    overlay.classList.add("show");
+  }
+
+  function hideOverlay() {
+    overlay.classList.remove("show");
+  }
+
+  function say(text) {
+    notice.textContent = text;
+    notice.classList.add("show");
+    clearTimeout(say.timer);
+    say.timer = setTimeout(() => notice.classList.remove("show"), 1000);
+  }
+
+  function vibrate(pattern) {
+    if (navigator.vibrate) navigator.vibrate(pattern);
+  }
+
+  function jump() {
+    if (state.mode === "ready" || state.mode === "over") {
+      reset("playing");
+      return;
+    }
+    if (state.mode !== "playing") return;
+    const p = state.player;
+    if (p.jumps < 2) {
+      p.vy = p.jumps === 0 ? -760 : -650;
+      p.jumps++;
+      burst(p.x + 20, p.y + p.h - 6, 16, "#5de7ff", 260);
+      vibrate(18);
+    }
+  }
+
+  function dash() {
+    if (state.mode !== "playing") return;
+    if (state.energy < .38 || state.dash > 0) {
+      say("能量不足");
+      return;
+    }
+    state.energy -= .38;
+    state.dash = .38;
+    state.invincible = Math.max(state.invincible, .42);
+    state.comboTimer = Math.max(state.comboTimer, 1.4);
+    burst(state.player.x + 10, state.player.y + 34, 22, "#35ddff", 430);
+    vibrate(28);
+  }
+
+  function togglePause() {
+    if (state.mode === "ready") return;
+    if (state.mode === "over") {
+      reset("playing");
+      return;
+    }
+    if (state.mode === "paused") {
+      state.mode = "playing";
+      state.last = performance.now();
+      hideOverlay();
+    } else {
+      state.mode = "paused";
+      showOverlay("已暫停", "保持節奏，下一段賽道會更快。", "繼續遊戲");
+    }
+  }
+
+  function burst(x, y, count, color, power) {
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const v = Math.random() * power;
+      state.particles.push({
+        x, y,
+        vx: Math.cos(a) * v - state.speed * .18,
+        vy: Math.sin(a) * v,
+        life: .25 + Math.random() * .35,
+        size: 2 + Math.random() * 4,
+        color
+      });
+    }
+  }
+
+  function spawnHazard() {
+    const r = Math.random();
+    const type = r > .68 ? "drone" : (r > .36 ? "crystal" : "gate");
+    const w = type === "drone" ? 58 : 42 + Math.random() * 34;
+    const h = type === "drone" ? 36 : 52 + Math.random() * 54;
+    state.hazards.push({
+      x: state.width + 80,
+      y: type === "drone" ? state.ground - 130 - Math.random() * 60 : state.ground - h,
+      w, h, type, hit: false, pulse: Math.random() * 6
+    });
+  }
+
+  function spawnRingRow() {
+    const amount = 5 + Math.floor(Math.random() * 4);
+    const arc = Math.random() > .5;
+    const baseY = state.ground - 105 - Math.random() * 115;
+    const startX = state.width + 90;
+    for (let i = 0; i < amount; i++) {
+      state.ringsList.push({
+        x: startX + i * 40,
+        y: arc ? baseY - Math.sin(i / Math.max(1, amount - 1) * Math.PI) * 62 : baseY + Math.sin(i * 1.2) * 14,
+        r: 13,
+        spin: Math.random() * 7
+      });
+    }
+  }
+
+  function update(dt) {
+    state.frame += dt;
+    const p = state.player;
+    const dashBoost = state.dash > 0 ? 1.55 : 1;
+    state.speed = Math.min(920, state.speed + dt * 8);
+    const runSpeed = state.speed * dashBoost;
+    state.score += dt * (18 + state.speed * .045) * state.combo;
+    state.energy = Math.min(1, state.energy + dt * (state.dash > 0 ? .05 : .16));
+    state.dash = Math.max(0, state.dash - dt);
+    state.invincible = Math.max(0, state.invincible - dt);
+    state.comboTimer = Math.max(0, state.comboTimer - dt);
+    if (state.comboTimer <= 0 && state.combo > 1) state.combo = Math.max(1, state.combo - 1);
+
+    p.run += dt * runSpeed * .035;
+    p.vy += 1900 * dt;
+    p.y += p.vy * dt;
+    if (p.y >= state.ground - p.h) {
+      if (p.vy > 280 && p.jumps > 0) burst(p.x + 24, state.ground - 6, 10, "#153c73", 140);
+      p.y = state.ground - p.h;
+      p.vy = 0;
+      p.jumps = 0;
+    }
+    p.spin += (p.jumps > 0 ? 13 : 4) * dt;
+
+    state.nextHazard -= runSpeed * dt;
+    if (state.nextHazard <= 0) {
+      spawnHazard();
+      state.nextHazard = 500 + Math.random() * 310 + Math.max(0, 820 - state.speed) * .28;
+    }
+    state.nextRing -= runSpeed * dt;
+    if (state.nextRing <= 0) {
+      spawnRingRow();
+      state.nextRing = 760 + Math.random() * 620;
+    }
+
+    const box = playerBox();
+    for (let i = state.hazards.length - 1; i >= 0; i--) {
+      const h = state.hazards[i];
+      h.x -= runSpeed * dt;
+      h.pulse += dt * 8;
+      const hitBox = { x: h.x + 6, y: h.y + 5, w: h.w - 12, h: h.h - 8 };
+      if (!h.hit && rectsHit(box, hitBox)) {
+        if (state.dash > 0 || state.invincible > 0) {
+          h.hit = true;
+          state.score += 120 * state.combo;
+          state.combo = Math.min(9, state.combo + 1);
+          state.comboTimer = 2.2;
+          burst(h.x + h.w / 2, h.y + h.h / 2, 24, "#ff4fce", 420);
+          state.hazards.splice(i, 1);
+          vibrate(20);
+          continue;
+        }
+        crash();
+        return;
+      }
+      if (h.x + h.w < -80) state.hazards.splice(i, 1);
+    }
+
+    for (let i = state.ringsList.length - 1; i >= 0; i--) {
+      const r = state.ringsList[i];
+      r.x -= runSpeed * dt;
+      r.spin += dt * 9;
+      if (Math.hypot(p.x + p.w / 2 - r.x, p.y + p.h / 2 - r.y) < 42) {
+        state.rings++;
+        state.score += 30 * state.combo;
+        state.combo = Math.min(9, state.combo + 1);
+        state.comboTimer = 2.4;
+        burst(r.x, r.y, 8, "#ffd84d", 230);
+        state.ringsList.splice(i, 1);
+        vibrate(10);
+      } else if (r.x < -40) {
+        state.ringsList.splice(i, 1);
+      }
+    }
+
+    for (let i = state.particles.length - 1; i >= 0; i--) {
+      const q = state.particles[i];
+      q.life -= dt;
+      q.x += q.vx * dt;
+      q.y += q.vy * dt;
+      q.vy += 180 * dt;
+      if (q.life <= 0) state.particles.splice(i, 1);
+    }
+    state.shake = Math.max(0, state.shake - dt * 42);
+    renderStats();
+  }
+
+  function playerBox() {
+    const p = state.player;
+    const rolling = p.jumps > 0 || state.dash > 0;
+    return rolling ? { x: p.x + 6, y: p.y + 7, w: 50, h: 50 } : { x: p.x + 8, y: p.y + 5, w: 46, h: 58 };
+  }
+
+  function rectsHit(a, b) {
+    return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+  }
+
+  function crash() {
+    state.mode = "over";
+    state.shake = 12;
+    vibrate([90, 40, 90]);
+    const finalScore = Math.floor(state.score);
+    if (finalScore > state.best) {
+      state.best = finalScore;
+      localStorage.setItem(storageKey, String(state.best));
+      say("刷新最佳紀錄");
+    }
+    renderStats();
+    showOverlay("速度中斷", `本次分數 ${finalScore}，收集 ${state.rings} 枚金環。衝刺能撞碎障礙，下一輪可以更兇。`, "再跑一次");
+  }
+
+  function drawBackground() {
+    const w = state.width, h = state.height, g = state.ground;
+    const sky = ctx.createLinearGradient(0, 0, 0, h);
+    sky.addColorStop(0, "#071426");
+    sky.addColorStop(.45, "#102f6a");
+    sky.addColorStop(.72, "#1b4aa1");
+    sky.addColorStop(1, "#081426");
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.save();
+    for (const s of state.stars) {
+      ctx.globalAlpha = s.a * (.55 + Math.sin(state.frame * 2 + s.x * 10) * .25);
+      ctx.fillStyle = "#bff8ff";
+      ctx.fillRect(s.x * w, s.y * g * .65, 2, 2);
+    }
+    ctx.restore();
+
+    ctx.save();
+    ctx.fillStyle = "rgba(12,28,66,.72)";
+    for (let i = 0; i < 18; i++) {
+      const x = ((i * 92 - state.frame * state.speed * .16) % (w + 140) + w + 140) % (w + 140) - 80;
+      const bh = 58 + (i * 37) % 125;
+      ctx.fillRect(x, g - bh, 56, bh);
+      ctx.fillStyle = i % 2 ? "rgba(53,221,255,.25)" : "rgba(255,216,77,.22)";
+      for (let yy = g - bh + 14; yy < g - 12; yy += 24) {
+        if ((i + yy) % 3) ctx.fillRect(x + 12, yy, 7, 10);
+        if ((i + yy) % 4) ctx.fillRect(x + 33, yy, 7, 10);
+      }
+      ctx.fillStyle = "rgba(12,28,66,.72)";
+    }
+    ctx.restore();
+
+    drawTrack();
+    drawSpeedLines();
+  }
+
+  function drawTrack() {
+    const w = state.width, h = state.height, g = state.ground;
+    const grad = ctx.createLinearGradient(0, g, 0, h);
+    grad.addColorStop(0, "#113780");
+    grad.addColorStop(.45, "#0a1d45");
+    grad.addColorStop(1, "#030912");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, g, w, h - g);
+    ctx.strokeStyle = "rgba(53,221,255,.9)";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(0, g + 2);
+    ctx.lineTo(w, g + 2);
+    ctx.stroke();
+    ctx.save();
+    ctx.globalAlpha = .65;
+    for (const lane of state.lanes) {
+      const x = ((lane.x - state.frame * state.speed * lane.z) % (w + 180) + w + 180) % (w + 180) - 80;
+      ctx.strokeStyle = lane.z > .8 ? "rgba(53,221,255,.55)" : "rgba(255,255,255,.24)";
+      ctx.lineWidth = lane.z > .8 ? 3 : 2;
+      ctx.beginPath();
+      ctx.moveTo(x, g + 34 + lane.z * 45);
+      ctx.lineTo(x + 70 + lane.z * 25, g + 34 + lane.z * 45);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawSpeedLines() {
+    const w = state.width, g = state.ground;
+    ctx.save();
+    ctx.globalAlpha = state.dash > 0 ? .72 : .34;
+    ctx.strokeStyle = "#d9fbff";
+    ctx.lineWidth = state.dash > 0 ? 3 : 2;
+    for (let i = 0; i < 24; i++) {
+      const x = ((i * 123 - state.frame * state.speed * (state.dash > 0 ? 2.3 : 1.4)) % (w + 180) + w + 180) % (w + 180) - 100;
+      const y = 54 + (i * 61) % Math.max(140, g - 100);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + 42 + (state.dash > 0 ? 72 : 24), y);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawPlayer() {
+    const p = state.player;
+    const rolling = p.jumps > 0 || state.dash > 0;
+    ctx.save();
+    ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+    ctx.shadowBlur = state.dash > 0 ? 34 : 20;
+    ctx.shadowColor = state.dash > 0 ? "#35ddff" : "#188cff";
+    if (rolling) {
+      ctx.rotate(p.spin);
+      const rg = ctx.createRadialGradient(-8, -8, 6, 0, 0, 34);
+      rg.addColorStop(0, "#77efff");
+      rg.addColorStop(.42, "#188cff");
+      rg.addColorStop(1, "#0643b9");
+      ctx.fillStyle = rg;
+      ctx.beginPath();
+      ctx.arc(0, 0, 31, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(218,252,255,.8)";
+      ctx.lineWidth = 4;
+      for (let i = 0; i < 4; i++) {
+        ctx.beginPath();
+        ctx.arc(0, 0, 10 + i * 5, i * .9, i * .9 + 1.15);
+        ctx.stroke();
+      }
+      ctx.restore();
+      return;
+    }
+
+    ctx.translate(-p.w / 2, -p.h / 2);
+    const runA = Math.sin(p.run) * 8;
+    const runB = Math.cos(p.run) * 8;
+    ctx.fillStyle = "rgba(53,221,255,.2)";
+    ctx.beginPath();
+    ctx.ellipse(-22, 44, 34, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#0f83ff";
+    ctx.beginPath();
+    ctx.moveTo(17, 16);
+    ctx.lineTo(-18, 2);
+    ctx.lineTo(8, 30);
+    ctx.lineTo(-23, 34);
+    ctx.lineTo(12, 48);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#188cff";
+    ctx.beginPath();
+    ctx.ellipse(28, 40, 24, 29, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#f6d7a4";
+    ctx.beginPath();
+    ctx.ellipse(35, 45, 15, 19, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#1c9bff";
+    ctx.beginPath();
+    ctx.ellipse(35, 18, 25, 23, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#f6d7a4";
+    ctx.beginPath();
+    ctx.ellipse(45, 22, 15, 14, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.beginPath();
+    ctx.ellipse(42, 10, 7, 10, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#082236";
+    ctx.beginPath();
+    ctx.arc(45, 10, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(58, 22, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#f6d7a4";
+    ctx.lineWidth = 8;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(37, 43);
+    ctx.lineTo(56, 35 + runA);
+    ctx.stroke();
+    ctx.strokeStyle = "#0a62d4";
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.moveTo(24, 62);
+    ctx.lineTo(8, 69 + runA);
+    ctx.moveTo(42, 62);
+    ctx.lineTo(64, 68 + runB);
+    ctx.stroke();
+    ctx.fillStyle = "#ff3358";
+    roundRect(0, 69 + runA, 28, 10, 5);
+    ctx.fill();
+    roundRect(54, 68 + runB, 31, 10, 5);
+    ctx.fill();
+    ctx.fillStyle = "#fff";
+    roundRect(7, 72 + runA, 12, 3, 2);
+    ctx.fill();
+    roundRect(61, 71 + runB, 14, 3, 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawHazard(h) {
+    ctx.save();
+    ctx.translate(h.x, h.y);
+    if (h.type === "crystal") {
+      ctx.shadowBlur = 22;
+      ctx.shadowColor = "#ff4fce";
+      ctx.fillStyle = "#d33cff";
+      ctx.beginPath();
+      ctx.moveTo(h.w / 2, -14);
+      ctx.lineTo(h.w, h.h);
+      ctx.lineTo(0, h.h);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,.34)";
+      ctx.beginPath();
+      ctx.moveTo(h.w / 2, -9);
+      ctx.lineTo(h.w * .68, h.h - 9);
+      ctx.lineTo(h.w * .46, h.h - 4);
+      ctx.closePath();
+      ctx.fill();
+    } else if (h.type === "drone") {
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = "#ff4f8b";
+      ctx.fillStyle = "#192d5c";
+      roundRect(4, 8, h.w - 8, 22, 11);
+      ctx.fill();
+      ctx.strokeStyle = "#ff4f8b";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(0, 19);
+      ctx.lineTo(h.w, 19);
+      ctx.stroke();
+      ctx.fillStyle = "#ff4f8b";
+      ctx.beginPath();
+      ctx.arc(h.w * .5, 19, 6 + Math.sin(h.pulse) * 2, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = "#ffd84d";
+      ctx.fillStyle = "#ff9b2f";
+      roundRect(0, 0, h.w, h.h, 9);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,.18)";
+      roundRect(8, 10, h.w - 16, 9, 5);
+      ctx.fill();
+      ctx.fillStyle = "rgba(8,20,38,.28)";
+      for (let y = 28; y < h.h - 6; y += 18) {
+        ctx.fillRect(8, y, h.w - 16, 4);
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawRing(r) {
+    ctx.save();
+    ctx.translate(r.x, r.y);
+    ctx.scale(Math.max(.25, Math.abs(Math.cos(r.spin))), 1);
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = "#ffd84d";
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = "#ffd84d";
+    ctx.beginPath();
+    ctx.arc(0, 0, r.r, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#fff3a3";
+    ctx.beginPath();
+    ctx.arc(-2, -2, r.r - 4, Math.PI * .95, Math.PI * 1.45);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function drawParticles() {
+    for (const q of state.particles) {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, q.life / .55);
+      ctx.fillStyle = q.color;
+      ctx.beginPath();
+      ctx.arc(q.x, q.y, q.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function draw() {
+    ctx.save();
+    if (state.shake > 0) ctx.translate((Math.random() - .5) * state.shake, (Math.random() - .5) * state.shake);
+    drawBackground();
+    for (const r of state.ringsList) drawRing(r);
+    for (const h of state.hazards) drawHazard(h);
+    drawPlayer();
+    drawParticles();
+    if (state.invincible > 0 && state.mode === "playing") {
+      ctx.save();
+      ctx.globalAlpha = .25 + Math.sin(state.frame * 18) * .08;
+      ctx.strokeStyle = "#35ddff";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.arc(state.player.x + state.player.w / 2, state.player.y + state.player.h / 2, 43, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+
+  function frame(now) {
+    const dt = Math.min(.033, Math.max(0, (now - state.last) / 1000 || 0));
+    state.last = now;
+    if (state.mode === "playing") update(dt);
+    draw();
+    requestAnimationFrame(frame);
+  }
+
+  addEventListener("resize", resize);
+  addEventListener("keydown", e => {
+    if (["Space", "ArrowUp", "KeyW"].includes(e.code)) { e.preventDefault(); jump(); }
+    if (["ShiftLeft", "ShiftRight", "KeyD"].includes(e.code)) { e.preventDefault(); dash(); }
+    if (e.code === "KeyP") togglePause();
+    if (e.code === "KeyR") reset("playing");
+  });
+  canvas.addEventListener("pointerdown", e => {
+    if (e.target === canvas) jump();
+  });
+  jumpBtn.addEventListener("pointerdown", e => { e.preventDefault(); jump(); });
+  dashBtn.addEventListener("pointerdown", e => { e.preventDefault(); dash(); });
+  pauseBtn.addEventListener("click", togglePause);
+  resetBtn.addEventListener("click", () => reset("playing"));
+  startBtn.addEventListener("click", () => {
+    if (state.mode === "paused") togglePause();
+    else reset("playing");
+  });
+  clearBtn.addEventListener("click", () => {
+    state.best = 0;
+    localStorage.removeItem(storageKey);
+    renderStats();
+    say("最佳紀錄已清除");
+  });
+
+  resize();
+  renderStats();
+  state.last = performance.now();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
